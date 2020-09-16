@@ -8,9 +8,9 @@ This plugin can be used on ARK Core powered nodes to prove ownership of a relay.
 
 ## Usage
 
-When installed, a relay owner can send a `PUT` request to the new `/api/verify` endpoint with their passphrase as the payload. This request **MUST** originate from 127.0.0.1. If the passphrase matches a registered delegate, the response will return the name of the delegate. Otherwise, an error will occur.
+When installed, a relay owner can send a `PUT` request to the new `/api/verify` endpoint with their passphrase as the payload. This request **MUST** originate from 127.0.0.1. If the passphrase matches a registered delegate, the response will return the name of the delegate and a secret key. Otherwise, an error will occur.
 
-After providing a valid passphrase, anybody can publicly confirm ownership of the relay by visiting `/api/verify` which will return a signed message in a JSON payload:
+After providing a valid passphrase, you can publicly confirm ownership of the relay by visiting `/api/verify?key={key}` (where `{key}` is the secret key from the `PUT` response) which will return a signed message in a JSON payload:
 
 ```
 {"publicKey":"0215789ac26155b7a338708f595b97c453e08918d0630c896cbd31d83fe2ad1c33","signature":"30450221009023531f43f9565337e40d8ad4a5bdf4708fd7c2d23430ce39a2ab1f1d3da31c02206ed4c3caabb2885aac4590b8317bf61b2c4addb6f1c3f2743aeb526b105fa281","message":"110153280"}
