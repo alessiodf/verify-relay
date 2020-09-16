@@ -3,6 +3,7 @@ import { Database, Logger, State } from "@arkecosystem/core-interfaces";
 import { Crypto, Identities } from "@arkecosystem/crypto";
 
 import boom from "@hapi/boom";
+import { randomBytes } from "crypto";
 
 export class Server {
     public start(): void {
@@ -17,9 +18,10 @@ export class Server {
 
         const http = api.instance("http");
         let passphrase: string;
+        let key: string;
 
-        const signWithPassphrase = () => {
-            if (!passphrase) {
+        const signWithPassphrase = request => {
+            if (!passphrase || request.query.key !== key) {
                 return boom.notFound();
             }
 
@@ -56,9 +58,11 @@ export class Server {
             );
 
             if (wallet.hasAttribute("delegate")) {
+                key = randomBytes(32).toString("hex");
                 passphrase = payloadPassphrase;
                 return {
-                    delegate: wallet.getAttribute("delegate").username
+                    delegate: wallet.getAttribute("delegate").username,
+                    key
                 };
             }
 
@@ -68,7 +72,7 @@ export class Server {
         http.route({
             method: "GET",
             path: "/api/verify",
-            handler: request => signWithPassphrase()
+            handler: request => signWithPassphrase(request)
         });
 
         http.route({
